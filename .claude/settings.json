@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "ask": [
+      "Edit(apps/**)",
+      "Edit(//Users/michaldusza/Developer/learn-react/apps/**)",
+      "Write(apps/**)",
+      "Write(//Users/michaldusza/Developer/learn-react/apps/**)"
+    ]
+  }
+}

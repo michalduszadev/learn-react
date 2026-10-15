@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Powtórki · fiszki</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .card { background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; padding: 22px 22px 18px; display: grid; gap: 14px; }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px 16px; font: 500 0.78rem/1.4 var(--f-mono); color: var(--ink-3); }
+  .front { font: 600 1.15rem/1.5 var(--f-head); }
+  textarea { width: 100%; min-height: 96px; font: 400 0.98rem/1.5 var(--f-read); color: var(--ink); background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; padding: 10px 12px; resize: vertical; }
+  textarea:focus-visible { outline: 2px solid var(--react); outline-offset: 1px; }
+  .back { border-left: 3px solid var(--react); padding-left: 12px; display: grid; gap: 4px; }
+  .back b { font: 600 0.72rem/1 var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--react); }
+  .mine { color: var(--ink-2); font-size: 0.92rem; white-space: pre-wrap; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .actions button, .modes button, .copy { font: 600 0.9rem/1 var(--f-head); padding: 10px 14px; border-radius: 8px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); cursor: pointer; }
+  .actions button.primary { border-color: var(--react); background: var(--react-bg); color: var(--react); }
+  .actions button.g-ok { border-color: var(--ok); background: var(--ok-bg); color: var(--ok); }
+  .actions button.g-mid { border-color: var(--warn); background: var(--warn-bg); color: var(--warn); }
+  .actions button.g-bad { border-color: var(--bad); background: var(--bad-bg); color: var(--bad); }
+  button:disabled { opacity: 0.45; cursor: not-allowed; }
+  .modes { display: flex; flex-wrap: wrap; gap: 8px; }
+  .modes button[aria-pressed="true"] { border-color: var(--react); color: var(--react); background: var(--react-bg); }
+  .progress { height: 6px; background: var(--rule); border-radius: 3px; overflow: hidden; }
+  .progress span { display: block; height: 100%; background: var(--react); width: 0; }
+  .result-line { font: 400 0.85rem/1.5 var(--f-mono); background: var(--code-bg); padding: 10px 12px; border-radius: 8px; word-break: break-all; user-select: all; }
+  .stats { display: flex; flex-wrap: wrap; gap: 8px 20px; font: 500 0.95rem/1.4 var(--f-mono); }
+  .empty { color: var(--ink-2); }
+</style>
+</head>
+<body>
+<main class="page">
+  <header>
+    <nav class="crumbs" aria-label="Nawigacja"><span>Powtórki</span><a href="../lessons/0001-model-mentalny-reacta.html">Lekcja 0001</a><a href="../reference/vue-to-react.html">Ściąga Vue → React</a></nav>
+    <h1>Fiszki</h1>
+    <p class="lede">Najpierw odpowiedz z pamięci, potem odsłoń kartę i oceń się uczciwie. Wysiłek przypominania to moment, w którym wiedza się utrwala.</p>
+    <div class="modes" role="group" aria-label="Zakres kart">
+      <button type="button" id="mode-due" aria-pressed="true">Do powtórki dziś</button>
+      <button type="button" id="mode-active" aria-pressed="false">Wszystkie aktywne</button>
+      <button type="button" id="mode-all" aria-pressed="false">Wszystkie (także nieaktywne)</button>
+    </div>
+  </header>
+
+  <section id="session" aria-live="polite"></section>
+
+  <footer class="ask">
+    <p>Na końcu skopiuj linijkę wyników i wklej ją Claude'owi w czacie. Zaktualizuje pudełka i daty powtórek w talii, a z błędnych odpowiedzi zrobi nowe karty.</p>
+  </footer>
+</main>
+
+<script src="../cards/cards.js"></script>
+<script>
+(function () {
+  const today = (() => { const d = new Date(); const p = n => String(n).padStart(2, "0"); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; })();
+  const all = Array.isArray(window.CARDS) ? window.CARDS : [];
+  const root = document.getElementById("session");
+  const modeButtons = { due: "mode-due", active: "mode-active", all: "mode-all" };
+  let deck = [], i = 0, results = [], mode = "due";
+
+  const store = {
+    get() { try { return JSON.parse(localStorage.getItem("lr-practice") || "null"); } catch (e) { return null; } },
+    set(v) { try { localStorage.setItem("lr-practice", JSON.stringify(v)); } catch (e) {} },
+    clear() { try { localStorage.removeItem("lr-practice"); } catch (e) {} },
+  };
+
+  function shuffle(a) { for (let k = a.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [a[k], a[j]] = [a[j], a[k]]; } return a; }
+
+  function pick(m) {
+    if (m === "due") return all.filter(c => c.due && c.due <= today).sort((a, b) => a.box - b.box);
+    if (m === "active") return shuffle(all.filter(c => c.due));
+    return shuffle(all.slice());
+  }
+
+  function el(tag, props = {}, ...kids) {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(props)) {
+      if (k === "class") e.className = v; else if (k.startsWith("on")) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v);
+    }
+    for (const kid of kids) e.append(kid);
+    return e;
+  }
+
+  function start(m) {
+    mode = m;
+    for (const [k, id] of Object.entries(modeButtons)) document.getElementById(id).setAttribute("aria-pressed", String(k === m));
+    deck = pick(m); i = 0; results = [];
+    store.set({ date: today, mode, ids: deck.map(c => c.id), i, results });
+    render();
+  }
+
+  function render() {
+    root.replaceChildren();
+    if (!all.length) { root.append(el("p", { class: "empty" }, "Nie udało się wczytać talii (learning/cards/cards.js).")); return; }
+    if (!deck.length) {
+      const inactive = all.filter(c => !c.due).length;
+      root.append(el("div", { class: "card" },
+        el("p", { class: "front" }, mode === "due" ? "Nic do powtórki na dziś." : "Brak aktywnych kart."),
+        el("p", { class: "empty" }, inactive ? `Nieaktywne karty: ${inactive}. Aktywują się po ukończeniu lekcji, z której pochodzą. Możesz je przejrzeć w trybie „Wszystkie”.` : "Wszystkie karty są zaplanowane na późniejsze dni."),
+      ));
+      return;
+    }
+    if (i >= deck.length) return renderSummary();
+
+    const c = deck[i];
+    const progress = el("div", { class: "progress", "aria-hidden": "true" }, el("span"));
+    progress.firstChild.style.width = `${Math.round((i / deck.length) * 100)}%`;
+    const answer = el("textarea", { id: "answer", placeholder: "Twoja odpowiedź z pamięci…", "aria-label": "Twoja odpowiedź" });
+    const reveal = el("button", { type: "button", class: "primary", disabled: "" }, "Pokaż odpowiedź");
+    const dunno = el("button", { type: "button" }, "Nie wiem");
+    answer.addEventListener("input", () => { reveal.disabled = answer.value.trim().length < 3; });
+    answer.addEventListener("keydown", e => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && !reveal.disabled) reveal.click(); });
+    const actions = el("div", { class: "actions" }, reveal, dunno);
+    const card = el("div", { class: "card" },
+      el("div", { class: "meta" }, el("span", {}, `${i + 1} / ${deck.length}`), el("span", {}, `pudełko ${c.box}`), el("span", {}, c.src), el("span", {}, c.id)),
+      progress,
+      el("p", { class: "front" }, c.front),
+      answer, actions,
+    );
+    root.append(card);
+    answer.focus();
+
+    function showBack(mine) {
+      answer.disabled = true; actions.remove();
+      card.append(
+        mine ? el("p", { class: "mine" }, `Twoja odpowiedź: ${mine}`) : el("p", { class: "mine" }, "Twoja odpowiedź: nie wiem"),
+        el("div", { class: "back" }, el("b", {}, "Odpowiedź"), el("span", {}, c.back)),
+        el("div", { class: "actions" },
+          el("button", { type: "button", class: "g-ok", onclick: () => grade("+") }, "Wiedziałem"),
+          el("button", { type: "button", class: "g-mid", onclick: () => grade("~") }, "Częściowo"),
+          el("button", { type: "button", class: "g-bad", onclick: () => grade("-") }, "Nie wiedziałem"),
+        ),
+      );
+      card.querySelector(".g-ok").focus();
+    }
+    reveal.addEventListener("click", () => showBack(answer.value.trim()));
+    dunno.addEventListener("click", () => showBack(""));
+
+    function grade(g) {
+      results.push({ id: c.id, g });
+      i += 1;
+      store.set({ date: today, mode, ids: deck.map(x => x.id), i, results });
+      render();
+    }
+  }
+
+  function renderSummary() {
+    const ok = results.filter(r => r.g === "+").length, mid = results.filter(r => r.g === "~").length, bad = results.filter(r => r.g === "-").length;
+    const line = `Powtórka ${today}: ` + results.map(r => r.id + r.g).join(" ");
+    const lineEl = el("p", { class: "result-line", id: "result-line" }, line);
+    const copy = el("button", { type: "button", class: "copy" }, "Kopiuj wynik");
+    copy.addEventListener("click", async () => {
+      try { await navigator.clipboard.writeText(line); copy.textContent = "Skopiowano"; }
+      catch (e) { const r = document.createRange(); r.selectNodeContents(lineEl); const s = getSelection(); s.removeAllRanges(); s.addRange(r); copy.textContent = "Zaznaczono, skopiuj ręcznie"; }
+    });
+    root.append(el("div", { class: "card" },
+      el("p", { class: "front" }, "Koniec powtórki"),
+      el("div", { class: "stats" }, el("span", {}, `wiedziałem: ${ok}`), el("span", {}, `częściowo: ${mid}`), el("span", {}, `nie wiedziałem: ${bad}`)),
+      el("p", {}, "Wklej tę linijkę Claude'owi w czacie:"),
+      lineEl,
+      el("div", { class: "actions" }, copy, el("button", { type: "button", onclick: () => { store.clear(); start(mode); } }, "Jeszcze raz")),
+    ));
+  }
+
+  document.getElementById("mode-due").addEventListener("click", () => start("due"));
+  document.getElementById("mode-active").addEventListener("click", () => start("active"));
+  document.getElementById("mode-all").addEventListener("click", () => start("all"));
+
+  // wznowienie przerwanej sesji z tego samego dnia
+  const saved = store.get();
+  if (saved && saved.date === today && Array.isArray(saved.ids)) {
+    const byId = Object.fromEntries(all.map(c => [c.id, c]));
+    deck = saved.ids.map(id => byId[id]).filter(Boolean); i = saved.i || 0; results = saved.results || []; mode = saved.mode || "due";
+    for (const [k, id] of Object.entries(modeButtons)) document.getElementById(id).setAttribute("aria-pressed", String(k === mode));
+    render();
+  } else {
+    start("due");
+  }
+})();
+</script>
+</body>
+</html>

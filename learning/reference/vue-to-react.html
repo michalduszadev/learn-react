@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ściąga · Vue 3 → React 19</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .page { max-width: 1040px; }
+  td { font-size: 0.88rem; }
+  td pre { padding: 8px 10px; font-size: 0.78rem; }
+  td.note-cell { color: var(--ink-2); min-width: 220px; }
+  .tbl { min-width: 860px; }
+  .tbl col.c1 { width: 15%; } .tbl col.c2 { width: 27%; } .tbl col.c3 { width: 30%; } .tbl col.c4 { width: 28%; }
+  .warn-cell { color: var(--warn); font-weight: 600; }
+</style>
+</head>
+<body>
+<main class="page">
+<header>
+  <nav class="crumbs" aria-label="Nawigacja"><span>Ściąga</span><a href="../lessons/0001-model-mentalny-reacta.html">Lekcja 0001</a></nav>
+  <h1>Vue 3 → React 19</h1>
+  <p class="lede">Odpowiedniki pojęć z Vue/Nuxt w React. Kolumna „Uwaga” mówi, gdzie analogia się psuje, i to jest najważniejsza część tej ściągi. Będzie rosła z kolejnymi lekcjami.</p>
+</header>
+
+<section aria-labelledby="c1">
+  <h2 id="c1">Komponenty i szablon</h2>
+  <div class="table-wrap"><table class="tbl">
+    <colgroup><col class="c1"><col class="c2"><col class="c3"><col class="c4"></colgroup>
+    <thead><tr><th>Pojęcie</th><th class="vue">Vue 3</th><th class="react">React 19</th><th>Uwaga</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Komponent</th><td><code>&lt;script setup&gt;</code> + <code>&lt;template&gt;</code></td><td>funkcja zwracająca JSX</td><td class="note-cell"><code>setup</code> wykonuje się raz, funkcja Reacta <strong>przy każdym renderze</strong> (<a href="../lessons/0001-model-mentalny-reacta.html">0001</a>).</td></tr>
+      <tr><th scope="row">Interpolacja</th><td><code>{{ name }}</code></td><td><code>{name}</code></td><td class="note-cell">W JSX klamry przyjmują dowolne wyrażenie JS.</td></tr>
+      <tr><th scope="row">Atrybuty</th><td><code>:href="url"</code></td><td><code>href={url}</code></td><td class="note-cell"><code>class</code> → <code>className</code>, <code>for</code> → <code>htmlFor</code>, camelCase dla zdarzeń.</td></tr>
+      <tr><th scope="row">Klasy warunkowe</th><td><code>:class="{ active: on }"</code></td><td><code>className={on ? 'active' : ''}</code></td><td class="note-cell">Brak wbudowanej składni obiektowej; popularna jest mała biblioteka <code>clsx</code>.</td></tr>
+      <tr><th scope="row"><code>v-if</code></th><td><code>&lt;p v-if="ok"&gt;</code></td><td><code>{ok &amp;&amp; &lt;p/&gt;}</code> albo <code>{ok ? &lt;A/&gt; : &lt;B/&gt;}</code></td><td class="note-cell">Uważaj na <code>{count &amp;&amp; …}</code>: dla 0 wyrenderuje „0” (<a href="https://react.dev/learn/conditional-rendering">Conditional Rendering</a>).</td></tr>
+      <tr><th scope="row"><code>v-show</code></th><td><code>v-show="ok"</code></td><td><code>hidden={!ok}</code> lub styl</td><td class="note-cell">Do zachowania stanu ukrytego drzewa: <a href="https://react.dev/reference/react/Activity"><code>&lt;Activity&gt;</code></a> (React 19.2).</td></tr>
+      <tr><th scope="row"><code>v-for</code></th><td><code>v-for="o in offers" :key="o.id"</code></td><td><code>{offers.map(o =&gt; &lt;Row key={o.id} /&gt;)}</code></td><td class="note-cell"><code>key</code> stabilny i unikalny, nigdy indeks przy listach, które się zmieniają (<a href="https://react.dev/learn/rendering-lists">Rendering Lists</a>).</td></tr>
+      <tr><th scope="row"><code>v-html</code></th><td><code>v-html="raw"</code></td><td><code>dangerouslySetInnerHTML={{ __html: raw }}</code></td><td class="note-cell">Nazwa jest ostrzeżeniem: ryzyko XSS, sanityzuj.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="c2">
+  <h2 id="c2">Dane, stan i reaktywność</h2>
+  <div class="table-wrap"><table class="tbl">
+    <colgroup><col class="c1"><col class="c2"><col class="c3"><col class="c4"></colgroup>
+    <thead><tr><th>Pojęcie</th><th class="vue">Vue 3</th><th class="react">React 19</th><th>Uwaga</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Stan lokalny</th><td><code>const n = ref(0)</code><br><code>n.value++</code></td><td><code>const [n, setN] = useState(0)</code><br><code>setN(n + 1)</code></td><td class="note-cell">Stan to zdjęcie z renderu; <code>setN</code> planuje kolejny render (<a href="https://react.dev/learn/state-as-a-snapshot">Snapshot</a>).</td></tr>
+      <tr><th scope="row">Obiekty i tablice</th><td><code>state.items.push(x)</code></td><td><code>setItems([...items, x])</code></td><td class="note-cell warn-cell">Mutacja w Vue działa, w React to błąd: React porównuje referencje.</td></tr>
+      <tr><th scope="row"><code>computed</code></th><td><code>computed(() =&gt; a + b)</code></td><td><code>const sum = a + b</code></td><td class="note-cell"><code>useMemo</code> tylko dla drogich obliczeń; React Compiler często memoizuje sam.</td></tr>
+      <tr><th scope="row"><code>watch</code></th><td><code>watch(q, fetchResults)</code></td><td>logika w handlerze zdarzenia; do synchronizacji z zewnętrznym systemem <code>useEffect</code></td><td class="note-cell warn-cell"><code>useEffect</code> ≠ <code>watch</code>. Zanim go użyjesz: <a href="https://react.dev/learn/you-might-not-need-an-effect">You Might Not Need an Effect</a>.</td></tr>
+      <tr><th scope="row"><code>onMounted</code> / <code>onUnmounted</code></th><td><code>onMounted(fn)</code></td><td><code>useEffect(() =&gt; { …; return cleanup }, [])</code></td><td class="note-cell">W Strict Mode (dev) efekt odpali się, posprząta i odpali ponownie; to celowe.</td></tr>
+      <tr><th scope="row">Template ref</th><td><code>const el = ref(null)</code> + <code>ref="el"</code></td><td><code>const el = useRef(null)</code> + <code>ref={el}</code></td><td class="note-cell"><code>useRef</code> to też „pudełko” na dowolną wartość, której zmiana nie wywołuje renderu.</td></tr>
+      <tr><th scope="row"><code>nextTick</code></th><td><code>await nextTick()</code></td><td>rzadko potrzebne; <code>flushSync</code> w wyjątkowych sytuacjach</td><td class="note-cell">React grupuje aktualizacje (batching) i sam decyduje, kiedy zatwierdzić DOM.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="c3">
+  <h2 id="c3">Komunikacja między komponentami</h2>
+  <div class="table-wrap"><table class="tbl">
+    <colgroup><col class="c1"><col class="c2"><col class="c3"><col class="c4"></colgroup>
+    <thead><tr><th>Pojęcie</th><th class="vue">Vue 3</th><th class="react">React 19</th><th>Uwaga</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Props</th><td><code>defineProps&lt;{ title: string }&gt;()</code></td><td><code>function Card({ title }: { title: string })</code></td><td class="note-cell">Props to zwykłe argumenty funkcji, tylko do odczytu.</td></tr>
+      <tr><th scope="row"><code>emit</code></th><td><code>emit('save', offer)</code></td><td>prop-funkcja: <code>onSave(offer)</code></td><td class="note-cell">Brak systemu zdarzeń: rodzic przekazuje callback.</td></tr>
+      <tr><th scope="row"><code>v-model</code></th><td><code>&lt;input v-model="q"&gt;</code></td><td><code>&lt;input value={q} onChange={e =&gt; setQ(e.target.value)} /&gt;</code></td><td class="note-cell">„Controlled input”: React jest źródłem prawdy. Dla formularzy: React Hook Form (moduł 2).</td></tr>
+      <tr><th scope="row">Slots</th><td><code>&lt;slot /&gt;</code>, <code>&lt;slot name="footer"/&gt;</code></td><td><code>children</code>, <code>footer={&lt;Footer/&gt;}</code></td><td class="note-cell">Nazwany slot to po prostu prop z JSX-em; scoped slot to prop-funkcja (render prop).</td></tr>
+      <tr><th scope="row"><code>provide</code> / <code>inject</code></th><td><code>provide(key, v)</code> / <code>inject(key)</code></td><td><code>createContext</code> + <code>&lt;Ctx value={v}&gt;</code> / <code>useContext(Ctx)</code></td><td class="note-cell">Zmiana wartości kontekstu re-renderuje wszystkich konsumentów (<a href="https://react.dev/learn/passing-data-deeply-with-context">Context</a>).</td></tr>
+      <tr><th scope="row"><code>defineExpose</code></th><td><code>defineExpose({ focus })</code></td><td><code>useImperativeHandle(ref, …)</code></td><td class="note-cell">W React 19 <code>ref</code> jest zwykłym propem (bez <code>forwardRef</code>).</td></tr>
+      <tr><th scope="row"><code>&lt;Teleport&gt;</code></th><td><code>&lt;Teleport to="body"&gt;</code></td><td><code>createPortal(jsx, document.body)</code></td><td class="note-cell">Zdarzenia bąbelkują wg drzewa React, nie DOM.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="c4">
+  <h2 id="c4">Logika wielokrotnego użytku i ekosystem</h2>
+  <div class="table-wrap"><table class="tbl">
+    <colgroup><col class="c1"><col class="c2"><col class="c3"><col class="c4"></colgroup>
+    <thead><tr><th>Pojęcie</th><th class="vue">Vue / Nuxt</th><th class="react">React</th><th>Uwaga</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Composables</th><td><code>useOffers()</code></td><td>custom hook <code>useOffers()</code></td><td class="note-cell">Reguły hooków: wołaj tylko na najwyższym poziomie komponentu lub innego hooka (<a href="https://react.dev/learn/reusing-logic-with-custom-hooks">Custom Hooks</a>).</td></tr>
+      <tr><th scope="row">Store globalny</th><td>Pinia</td><td>Zustand (stan klienta)</td><td class="note-cell">Danych z API nie trzymaj w store, tylko w TanStack Query.</td></tr>
+      <tr><th scope="row">Pobieranie danych</th><td><code>useFetch</code> / <code>useAsyncData</code></td><td>TanStack Query (<code>useQuery</code>, <code>useMutation</code>)</td><td class="note-cell">Cache po kluczu, unieważnianie, odświeżanie w tle (<a href="https://tanstack.com/query/latest/docs/framework/react/overview">docs</a>).</td></tr>
+      <tr><th scope="row">Walidacja formularzy</th><td>VeeValidate + Zod</td><td>React Hook Form + Zod</td><td class="note-cell">Ten sam schemat Zod wykorzystasz w NestJS (moduł 4).</td></tr>
+      <tr><th scope="row">Routing</th><td>Vue Router</td><td>React Router</td><td class="note-cell">W module 7 zastąpi go routing plikowy Next.js.</td></tr>
+      <tr><th scope="row">Meta-framework</th><td>Nuxt</td><td>Next.js</td><td class="note-cell">Server Components nie mają odpowiednika w Nuxt; to nowy model (moduł 7).</td></tr>
+      <tr><th scope="row">Async UI</th><td><code>&lt;Suspense&gt;</code></td><td><code>&lt;Suspense&gt;</code></td><td class="note-cell">Ta sama idea, w React dojrzalsza i szerzej używana.</td></tr>
+      <tr><th scope="row">Testy</th><td>Vue Test Utils</td><td>React Testing Library</td><td class="note-cell">Testuj zachowanie widoczne dla użytkownika, nie wnętrzności komponentu.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<footer class="ask"><p>Brakuje czegoś? Poproś, a dopiszę wiersz. Ta ściąga rośnie razem z kursem.</p></footer>
+</main>
+</body>
+</html>

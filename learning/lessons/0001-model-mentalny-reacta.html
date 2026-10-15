@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0001 · Model mentalny Reacta</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main class="page">
+
+<header>
+  <nav class="crumbs" aria-label="Nawigacja">
+    <span>Moduł 1 · Rdzeń Reacta</span>
+    <span>Lekcja 0001</span>
+    <a href="../reference/vue-to-react.html">Ściąga Vue → React</a>
+  </nav>
+  <h1>Komponent to funkcja, która się powtarza</h1>
+  <p class="lede">Największa różnica między Vue a Reactem nie leży w składni, tylko w tym, <em>co się dzieje, gdy zmienia się stan</em>. Kiedy to zrozumiesz, <code>useEffect</code>, <code>useMemo</code> i „dlaczego mój stan jest nieaktualny” przestaną być zagadką.</p>
+  <div class="win"><b>Po tej lekcji</b><span>Przewidzisz, co pokaże komponent po kliknięciu, i wyjaśnisz na rozmowie, czym „render” w React różni się od reaktywności Vue.</span></div>
+</header>
+
+<section aria-labelledby="s1">
+  <h2 id="s1">Jak to robi Vue: śledzenie zależności</h2>
+  <p>W Vue funkcja <code>setup()</code> (albo <code>&lt;script setup&gt;</code>) wykonuje się <strong>raz</strong> na instancję komponentu. Zwracasz z niej obiekty reaktywne. Vue opakowuje je w <code>Proxy</code>, zapamiętuje, które efekty (render szablonu, <code>computed</code>, <code>watch</code>) czytały dane pole, i przy zmianie uruchamia ponownie tylko je (<a href="https://vuejs.org/guide/extras/reactivity-in-depth.html">Vue: Reactivity in Depth</a>).</p>
+  <p>Twoja intuicja z Vue brzmi więc: <em>„zmieniam wartość, framework wie, co od niej zależy”</em>.</p>
+</section>
+
+<section aria-labelledby="s2">
+  <h2 id="s2">Jak to robi React: wywołaj funkcję jeszcze raz</h2>
+  <p>W React komponent to zwykła funkcja zwracająca JSX. <strong>Renderowanie to wywołanie tej funkcji przez Reacta</strong>. Dzieje się tak przy pierwszym wyświetleniu i za każdym razem, gdy zmieni się stan komponentu (albo jego rodzica). React porównuje nowy wynik z poprzednim i zmienia w DOM tylko różnice (<a href="https://react.dev/learn/render-and-commit">react.dev: Render and Commit</a>).</p>
+  <div class="vs">
+    <div class="vue">
+      <span class="label vue">Vue 3</span>
+<pre><code>&lt;script setup&gt;
+import { ref, computed } from 'vue'
+
+// wykonuje się RAZ
+const count = ref(0)
+const double = computed(() =&gt; count.value * 2)
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;button @click="count++"&gt;{{ count }}&lt;/button&gt;
+  &lt;p&gt;{{ double }}&lt;/p&gt;
+&lt;/template&gt;</code></pre>
+    </div>
+    <div class="react">
+      <span class="label react">React 19</span>
+<pre><code>import { useState } from 'react'
+
+function Counter() {
+  // wykonuje się PRZY KAŻDYM renderze
+  const [count, setCount] = useState(0)
+  const double = count * 2 // zwykłe wyrażenie
+
+  return (
+    &lt;&gt;
+      &lt;button onClick={() =&gt; setCount(count + 1)}&gt;
+        {count}
+      &lt;/button&gt;
+      &lt;p&gt;{double}&lt;/p&gt;
+    &lt;/&gt;
+  )
+}</code></pre>
+    </div>
+  </div>
+  <p>Zauważ: w React <code>double</code> nie potrzebuje żadnego <code>computed</code>. Funkcja i tak wykona się od nowa, więc wartość pochodna to po prostu zmienna. React nie śledzi zależności, tylko <strong>wywołuje całość ponownie</strong>.</p>
+</section>
+
+<section aria-labelledby="s3">
+  <h2 id="s3">Stan to zdjęcie, nie zmienna</h2>
+  <p>Skoro funkcja wykonuje się wiele razy, skąd React wie, ile wynosi <code>count</code>? Przechowuje stan poza funkcją i przy każdym renderze <em>podaje</em> jego wartość. W ramach jednego renderu <code>count</code> jest <strong>stałą</strong>, czyli zdjęciem stanu z tej chwili. Wywołanie <code>setCount</code> nie zmienia tej stałej: prosi Reacta o <em>następny</em> render z nową wartością (<a href="https://react.dev/learn/state-as-a-snapshot">react.dev: State as a Snapshot</a>).</p>
+<pre><code>function handleClick() {
+  setCount(count + 1)   // count == 0 → „ustaw 1 w następnym renderze”
+  setCount(count + 1)   // count wciąż == 0 → „ustaw 1”
+  setCount(count + 1)   // count wciąż == 0 → „ustaw 1”
+  console.log(count)    // 0, bo to zdjęcie z bieżącego renderu
+}
+// po kliknięciu: 1, nie 3</code></pre>
+  <p>Gdy nowa wartość zależy od poprzedniej, przekaż <strong>funkcję aktualizującą</strong>. React ustawi takie wywołania w kolejce i wykona je po kolei (<a href="https://react.dev/learn/queueing-a-series-of-state-updates">react.dev: Queueing state updates</a>):</p>
+<pre><code>setCount(c =&gt; c + 1)
+setCount(c =&gt; c + 1)
+setCount(c =&gt; c + 1) // po kliknięciu: +3</code></pre>
+
+  <div class="demo" id="demo" aria-live="polite">
+    <span class="label react">Sprawdź na żywo (prawdziwy React 19)</span>
+    <div id="demo-root"><p class="score">Ładowanie Reacta…</p></div>
+  </div>
+</section>
+
+<section aria-labelledby="s4">
+  <h2 id="s4">Co z tego wynika w praktyce</h2>
+  <ul>
+    <li><strong>Wartości pochodne licz w ciele komponentu.</strong> Nie trzymaj ich w drugim <code>useState</code> synchronizowanym przez <code>useEffect</code>: to najczęstszy błąd ludzi z Vue (<a href="https://react.dev/learn/you-might-not-need-an-effect">You Might Not Need an Effect</a>). <code>useMemo</code> to optymalizacja na drogie obliczenia, a nie odpowiednik <code>computed</code>; React Compiler i tak często memoizuje za Ciebie (<a href="https://react.dev/learn/react-compiler">React Compiler</a>).</li>
+    <li><strong>Zwykła zmienna nie przetrwa renderu.</strong> <code>let clicks = 0</code> w ciele komponentu resetuje się przy każdym wywołaniu. Do pamiętania wartości służy <code>useState</code> (zmiana wywołuje render) albo <code>useRef</code> (zmiana go nie wywołuje).</li>
+    <li><strong>Funkcja komponentu musi być czysta.</strong> React może ją wywołać wiele razy, a w trybie deweloperskim (Strict Mode) celowo robi to dwukrotnie, żeby wyłapać efekty uboczne (<a href="https://react.dev/learn/keeping-components-pure">Keeping Components Pure</a>). Fetch, timery i mutacje idą do handlerów zdarzeń albo efektów.</li>
+    <li><strong>Nie mutuj stanu.</strong> <code>items.push(x)</code> nic nie da, bo React porównuje referencje. Tworzysz nową tablicę: <code>setItems([...items, x])</code>. W Vue mutacja <em>była</em> mechanizmem, w React jest błędem.</li>
+  </ul>
+  <div class="pitfall"><b>Gdzie analogia z Vue się psuje</b><span><code>useEffect</code> to <em>nie</em> <code>watch</code>. Efekt służy do synchronizacji z czymś <em>poza</em> Reactem (API przeglądarki, subskrypcja, zewnętrzna biblioteka), a nie do reagowania na zmianę stanu. Na zmianę stanu reagujesz w handlerze zdarzenia, który ją wywołał.</span></div>
+</section>
+
+<section aria-labelledby="s5">
+  <h2 id="s5">Sprawdź się</h2>
+  <p>Odpowiadaj z pamięci, bez przewijania w górę. Wysiłek przypominania to właśnie moment, w którym wiedza się utrwala.</p>
+  <div class="quiz">
+    <div class="q">
+      <p class="prompt">1. Co robi React, gdy w handlerze wywołasz <code>setCount</code>?</p>
+      <div class="opts">
+        <button class="opt" data-correct>Planuje ponowne wywołanie całej funkcji tego komponentu</button>
+        <button class="opt">Aktualizuje tylko fragmenty zależne od zmiennej count</button>
+        <button class="opt">Natychmiast nadpisuje wartość zmiennej count w handlerze</button>
+        <button class="opt">Czeka, aż ręcznie wywołasz metodę render komponentu</button>
+      </div>
+      <p class="explain" hidden>React nie śledzi zależności jak Vue. Zmiana stanu planuje render: funkcja komponentu wykona się ponownie, a React porówna wynik i zmieni w DOM tylko różnice.</p>
+    </div>
+    <div class="q">
+      <p class="prompt">2. <code>count</code> wynosi 0. Handler wywołuje trzy razy <code>setCount(count + 1)</code>. Ile pokaże przycisk po kliknięciu?</p>
+      <div class="opts">
+        <button class="opt" data-correct>1</button>
+        <button class="opt">3</button>
+        <button class="opt">0</button>
+        <button class="opt">2</button>
+      </div>
+      <p class="explain" hidden><code>count</code> to zdjęcie z bieżącego renderu, więc każde wywołanie ustawia „0 + 1”. Żeby dostać 3, użyj funkcji aktualizującej: <code>setCount(c =&gt; c + 1)</code>.</p>
+    </div>
+    <div class="q">
+      <p class="prompt">3. Jak w React zrobić odpowiednik <code>computed</code> dla <code>fullName</code> z <code>firstName</code> i <code>lastName</code>?</p>
+      <div class="opts">
+        <button class="opt" data-correct>Obliczyć wartość bezpośrednio w ciele komponentu</button>
+        <button class="opt">Synchronizować drugi stan przez hook useEffect</button>
+        <button class="opt">Dodać getter wewnątrz obiektu stanu komponentu</button>
+        <button class="opt">Użyć useState z funkcją, która to oblicza</button>
+      </div>
+      <p class="explain" hidden>Funkcja komponentu i tak wykonuje się przy każdym renderze, więc <code>const fullName = firstName + ' ' + lastName</code> zawsze jest aktualne. Drugi stan + <code>useEffect</code> to dodatkowy render i ryzyko rozjazdu danych.</p>
+    </div>
+    <div class="q">
+      <p class="prompt">4. <code>count</code> wynosi 5. Handler wywołuje <code>setCount(count + 1)</code>, a potem <code>console.log(count)</code>. Co zobaczysz w konsoli?</p>
+      <div class="opts">
+        <button class="opt" data-correct>5</button>
+        <button class="opt">6</button>
+        <button class="opt">undefined</button>
+        <button class="opt">7</button>
+      </div>
+      <p class="explain" hidden>W ramach tego renderu <code>count</code> pozostaje 5. Nowa wartość pojawi się dopiero w następnym wywołaniu funkcji komponentu.</p>
+    </div>
+    <div class="q">
+      <p class="prompt">5. Dlaczego funkcja komponentu musi być czysta (bez efektów ubocznych)?</p>
+      <div class="opts">
+        <button class="opt" data-correct>React może ją wywoływać wielokrotnie, także celowo podwójnie</button>
+        <button class="opt">Inaczej TypeScript nie skompiluje pliku zawierającego ten komponent</button>
+        <button class="opt">Przeglądarka blokuje efekty uboczne uruchamiane wewnątrz kodu JSX</button>
+        <button class="opt">Czyste funkcje automatycznie zapamiętują stan między kolejnymi renderami</button>
+      </div>
+      <p class="explain" hidden>Render może się wydarzyć wiele razy, a Strict Mode w trybie deweloperskim wywołuje komponent dwukrotnie właśnie po to, żeby ujawnić efekty uboczne w ciele funkcji.</p>
+    </div>
+  </div>
+  <p class="score" aria-live="polite"></p>
+</section>
+
+<section aria-labelledby="s6">
+  <h2 id="s6">Zadanie na teraz</h2>
+  <p>Przygotuj odpowiedź na pytanie rekrutacyjne: <strong>„Czym różni się model aktualizacji UI w React i w Vue?”</strong> Trzy, cztery zdania, własnymi słowami, bez zaglądania tutaj. Napisz je w czacie, a ja zrobię review jak rekruter.</p>
+  <div class="source"><b>Źródło główne</b><span>Przeczytaj <a href="https://react.dev/learn/render-and-commit">Render and Commit</a> i <a href="https://react.dev/learn/state-as-a-snapshot">State as a Snapshot</a> na react.dev (razem ok. 20 minut). To najlepsze oficjalne wyjaśnienie tego tematu.</span></div>
+</section>
+
+<footer class="ask">
+  <p>Coś niejasne? Zapytaj mnie w czacie. Jestem Twoim mentorem i mogę wyjaśnić to inaczej, dać więcej przykładów albo zrobić dodatkowy quiz.</p>
+  <p class="next"><a href="../reference/vue-to-react.html">Ściąga Vue → React</a><a href="../practice/index.html">Fiszki (powtórki)</a><a href="../../ROADMAP.md">Roadmapa</a></p>
+</footer>
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script type="module">
+  // Demo: dwa przyciski z tym samym zamiarem „+3”, różne zachowanie.
+  import { createElement as h, useState } from "https://esm.sh/react@19.1.0";
+  import { createRoot } from "https://esm.sh/react-dom@19.1.0/client";
+
+  function SnapshotDemo() {
+    const [count, setCount] = useState(0);
+    const plusThreeSnapshot = () => { setCount(count + 1); setCount(count + 1); setCount(count + 1); };
+    const plusThreeUpdater = () => { setCount(c => c + 1); setCount(c => c + 1); setCount(c => c + 1); };
+    return h("div", { className: "row" },
+      h("output", { "aria-label": "Wartość count" }, count),
+      h("button", { onClick: plusThreeSnapshot }, "+3 przez setCount(count + 1)"),
+      h("button", { onClick: plusThreeUpdater }, "+3 przez setCount(c => c + 1)"),
+      h("button", { onClick: () => setCount(0) }, "Reset"),
+    );
+  }
+
+  try {
+    createRoot(document.getElementById("demo-root")).render(h(SnapshotDemo));
+  } catch (e) {
+    document.getElementById("demo-root").innerHTML = '<p class="score">Nie udało się załadować Reacta (brak internetu?). Kod demo znajdziesz na końcu pliku tej lekcji.</p>';
+  }
+</script>
+</body>
+</html>

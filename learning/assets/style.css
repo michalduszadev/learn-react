@@ -1,0 +1,124 @@
+/* learn-react: wspólny arkusz stylów kursu.
+   Koncepcja: kartka do czytania (serif, wąska kolumna ~68ch), kod i dane w mono,
+   React = turkus, Vue = zieleń. Kolor zawsze niesie znaczenie, nigdy dekorację. */
+@import url("https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600&family=Instrument+Sans:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+
+:root {
+  --paper: #fbfbf9;
+  --surface: #ffffff;
+  --ink: #1b1f27;
+  --ink-2: #464d5a;
+  --ink-3: #6b7280;
+  --rule: #e2e4e8;
+  --code-bg: #f2f3f5;
+  --react: #0e7490;      /* wszystko, co dotyczy Reacta */
+  --react-bg: #e3f3f7;
+  --vue: #2f7a52;        /* wszystko, co dotyczy Vue */
+  --vue-bg: #e5f2ea;
+  --ok: #1f6f4a; --ok-bg: #e6f3ec;
+  --bad: #a1332f; --bad-bg: #fbe9e8;
+  --warn: #8a5a00; --warn-bg: #fbf1dc;
+  --f-read: "Literata", Georgia, "Times New Roman", serif;
+  --f-head: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #14171c; --surface: #1b1f26; --ink: #e9ecf1; --ink-2: #b5bcc8; --ink-3: #8a93a1; --rule: #2c323b; --code-bg: #20252d;
+    --react: #5cc6dd; --react-bg: #12313a; --vue: #6fcf97; --vue-bg: #15301f;
+    --ok: #7fd3a8; --ok-bg: #173126; --bad: #f19a95; --bad-bg: #3a1c1b; --warn: #f0c36a; --warn-bg: #33280f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #14171c; --surface: #1b1f26; --ink: #e9ecf1; --ink-2: #b5bcc8; --ink-3: #8a93a1; --rule: #2c323b; --code-bg: #20252d;
+  --react: #5cc6dd; --react-bg: #12313a; --vue: #6fcf97; --vue-bg: #15301f;
+  --ok: #7fd3a8; --ok-bg: #173126; --bad: #f19a95; --bad-bg: #3a1c1b; --warn: #f0c36a; --warn-bg: #33280f;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 17px/1.7 var(--f-read); }
+.page { max-width: 760px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 96px; display: grid; gap: 40px; }
+.page > section, .page > header { display: grid; gap: 16px; min-width: 0; }
+
+h1, h2, h3 { font-family: var(--f-head); line-height: 1.2; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+h1 { font-size: clamp(2rem, 5vw, 2.7rem); font-weight: 700; }
+h2 { font-size: 1.45rem; font-weight: 600; }
+h3 { font-size: 1.1rem; font-weight: 600; }
+p, li { max-width: 68ch; }
+p { margin: 0; }
+ul, ol { margin: 0; padding-left: 1.3em; display: grid; gap: 6px; }
+a { color: var(--react); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--react); outline-offset: 2px; border-radius: 4px; }
+strong { font-weight: 600; }
+
+/* nagłówek lekcji */
+.crumbs { display: flex; flex-wrap: wrap; gap: 6px 14px; font: 500 0.78rem/1.4 var(--f-mono); color: var(--ink-3); letter-spacing: 0.02em; }
+.crumbs a { color: var(--ink-3); }
+.lede { font-size: 1.12rem; color: var(--ink-2); }
+.win { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 14px 18px; display: grid; gap: 6px; }
+.win b { font: 600 0.75rem/1 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+
+/* kod */
+code { font: 400 0.88em/1.5 var(--f-mono); background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 4px; }
+pre { margin: 0; background: var(--code-bg); border-radius: 8px; padding: 14px 16px; overflow-x: auto; font: 400 0.85rem/1.6 var(--f-mono); }
+pre code { background: none; padding: 0; font-size: inherit; }
+.label { font: 600 0.72rem/1 var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase; }
+.label.react { color: var(--react); } .label.vue { color: var(--vue); }
+
+/* porównanie Vue | React obok siebie */
+.vs { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+.vs > div { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.vs > div.vue pre { border-left: 3px solid var(--vue); }
+.vs > div.react pre { border-left: 3px solid var(--react); }
+
+/* ramki */
+.note, .pitfall, .source { border-radius: 8px; padding: 12px 16px; display: grid; gap: 6px; }
+.note { background: var(--react-bg); }
+.pitfall { background: var(--warn-bg); }
+.pitfall b, .note b, .source b { font-family: var(--f-head); }
+.source { border: 1px solid var(--rule); background: var(--surface); }
+
+/* tabele */
+.table-wrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--rule); }
+tbody tr:last-child > * { border-bottom: 0; }
+thead th { font: 600 0.72rem/1.2 var(--f-mono); text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-3); }
+th.vue, td.vue { color: var(--vue); } th.react { color: var(--react); }
+td code { white-space: nowrap; }
+
+/* quiz (assets/quiz.js) */
+.quiz { display: grid; gap: 18px; }
+.q { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 16px 18px; display: grid; gap: 12px; }
+.q .prompt { font-weight: 600; }
+.q .opts { display: grid; gap: 8px; }
+.q button.opt { text-align: left; font: inherit; font-size: 0.95rem; color: var(--ink); background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; padding: 9px 12px; cursor: pointer; }
+.q button.opt:hover:not(:disabled) { border-color: var(--react); }
+.q button.opt.right { background: var(--ok-bg); border-color: var(--ok); color: var(--ok); }
+.q button.opt.wrong { background: var(--bad-bg); border-color: var(--bad); color: var(--bad); }
+.q button.opt:disabled { cursor: default; }
+.q .explain { font-size: 0.93rem; color: var(--ink-2); border-left: 3px solid var(--rule); padding-left: 12px; }
+.score { font: 500 0.9rem/1.4 var(--f-mono); color: var(--ink-2); }
+
+/* demo na żywo */
+.demo { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 16px 18px; display: grid; gap: 12px; }
+.demo button { font: 600 0.9rem/1 var(--f-head); padding: 10px 14px; border-radius: 8px; border: 1px solid var(--react); background: var(--react-bg); color: var(--react); cursor: pointer; }
+.demo .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.demo output { font: 500 1.6rem/1 var(--f-mono); min-width: 3ch; }
+
+/* stopka */
+.ask { border-top: 1px solid var(--rule); padding-top: 18px; color: var(--ink-2); font-size: 0.95rem; }
+.next { display: flex; flex-wrap: wrap; gap: 8px 20px; font-family: var(--f-head); }
+
+@media print {
+  body { background: #fff; color: #000; font-size: 11pt; }
+  .q button.opt { border-color: #999; }
+  .demo, .quiz { break-inside: avoid; }
+  a { color: #000; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .q button.opt { transition: background-color .15s, border-color .15s; }
+}
