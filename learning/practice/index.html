@@ -39,7 +39,7 @@
     <div class="modes" role="group" aria-label="Zakres kart">
       <button type="button" id="mode-due" aria-pressed="true">Do powtórki dziś</button>
       <button type="button" id="mode-active" aria-pressed="false">Wszystkie aktywne</button>
-      <button type="button" id="mode-all" aria-pressed="false">Wszystkie (także nieaktywne)</button>
+      <button type="button" id="mode-all" aria-pressed="false">Wszystkie (także nieaktywne i archiwum)</button>
     </div>
   </header>
 
@@ -94,10 +94,12 @@
     root.replaceChildren();
     if (!all.length) { root.append(el("p", { class: "empty" }, "Nie udało się wczytać talii (learning/cards/cards.js).")); return; }
     if (!deck.length) {
-      const inactive = all.filter(c => !c.due).length;
+      const inactive = all.filter(c => !c.due && !c.archived).length;
+      const archived = all.filter(c => c.archived).length;
       root.append(el("div", { class: "card" },
         el("p", { class: "front" }, mode === "due" ? "Nic do powtórki na dziś." : "Brak aktywnych kart."),
         el("p", { class: "empty" }, inactive ? `Nieaktywne karty: ${inactive}. Aktywują się po ukończeniu lekcji, z której pochodzą. Możesz je przejrzeć w trybie „Wszystkie”.` : "Wszystkie karty są zaplanowane na późniejsze dni."),
+        ...(archived ? [el("p", { class: "empty" }, `W archiwum (opanowane): ${archived}.`)] : []),
       ));
       return;
     }
@@ -113,7 +115,7 @@
     answer.addEventListener("keydown", e => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && !reveal.disabled) reveal.click(); });
     const actions = el("div", { class: "actions" }, reveal, dunno);
     const card = el("div", { class: "card" },
-      el("div", { class: "meta" }, el("span", {}, `${i + 1} / ${deck.length}`), el("span", {}, `pudełko ${c.box}`), el("span", {}, c.src), el("span", {}, c.id)),
+      el("div", { class: "meta" }, el("span", {}, `${i + 1} / ${deck.length}`), el("span", {}, c.archived ? "archiwum" : `pudełko ${c.box}`), el("span", {}, c.src), el("span", {}, c.id)),
       progress,
       el("p", { class: "front" }, c.front),
       answer, actions,

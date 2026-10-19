@@ -41,7 +41,7 @@ Warsztat skilla `/teach` znajduje się w **`learning/`**, nie w katalogu główn
 2. **Rozgrzewka z fiszek:** wybierz z `learning/cards/cards.js` maks. 5 kart z `due` ≤ dziś (najpierw najniższe pudełko). Pytaj po jednej; Michał odpowiada z pamięci, bez podglądania, a potem oceniasz zgodnie z regułą 9. Gdy nic nie jest do powtórki, zadaj 2–3 pytania z ostatniej lekcji.
 3. Lekcja (jedna koncepcja) i/lub zadanie z GitHub Issues.
 4. Praca Michała z drabinką podpowiedzi; po podpowiedzi z 3. lub 4. szczebla obowiązkowe „zrób od nowa” (reguła 8).
-5. Review, potem learning record (tylko gdy jest dowód zrozumienia), odhaczenie w `ROADMAP.md`. Commit robi Michał.
+5. Review, potem learning record (tylko gdy jest dowód zrozumienia), odhaczenie w `ROADMAP.md`. Commity robię ja (Claude): po każdym zamkniętym kroku, w stylu Conventional Commits, po polsku, małe i tematyczne (repo jest portfolio). Kod aplikacji pisze nadal Michał; commit nie zmienia tego, kto jest autorem rozwiązania. Push tylko na wyraźną prośbę.
 6. **Aktualizacja fiszek** (szczegóły niżej) i krótkie podsumowanie, co do powtórki.
 
 ## Fiszki (powtórki rozłożone w czasie)
@@ -50,6 +50,7 @@ Jedynym źródłem prawdy jest `learning/cards/cards.js`; edytuję go ja. Micha�
 
 - **System pudełek Leitnera**, interwały: pudełko 1 → 1 dzień, 2 → 3 dni, 3 → 7 dni, 4 → 16 dni, 5 → 35 dni.
 - Odpowiedź poprawna: pudełko +1 (maks. 5), `due` = dziś + interwał nowego pudełka. Częściowo: pudełko bez zmian, `due` = jutro. Błędna: pudełko 1, `due` = jutro.
+- **Archiwum:** poprawna odpowiedź na karcie, która już jest w pudełku 5, przenosi ją do archiwum (`archived` = dziś, `due: null`). Karta nie wraca do powtórek. Gdy Michał pomyli się na karcie z archiwum (np. w trybie „Wszystkie”), karta wraca do pudełka 1, `due` = jutro, a pole `archived` usuwam.
 - **Każdy błąd to nowa fiszka.** Przy błędnej lub częściowej odpowiedzi (także w quizach, review i egzaminach) dopisuję nową kartę, która sprawdza tę samą ideę **innymi słowami lub z innej strony**, a nie kopię starej.
 - Nowe karty z lekcji mają `due: null` (nieaktywne). Po ukończeniu lekcji ustawiam im `due` na jutro.
 - Jedna karta to jedna idea. Pytanie na froncie wymaga odpowiedzi z pamięci (nie tak/nie).

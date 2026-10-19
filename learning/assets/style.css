@@ -101,7 +101,11 @@ td code { white-space: nowrap; }
 .q button.opt.wrong { background: var(--bad-bg); border-color: var(--bad); color: var(--bad); }
 .q button.opt:disabled { cursor: default; }
 .q .explain { font-size: 0.93rem; color: var(--ink-2); border-left: 3px solid var(--rule); padding-left: 12px; }
-.score { font: 500 0.9rem/1.4 var(--f-mono); color: var(--ink-2); }
+.score, .demo-status { font: 500 0.9rem/1.4 var(--f-mono); color: var(--ink-2); }
+.result { display: grid; gap: 8px; justify-items: start; }
+.result-line { font: 400 0.85rem/1.5 var(--f-mono); background: var(--code-bg); padding: 10px 12px; border-radius: 8px; word-break: break-word; user-select: all; justify-self: stretch; }
+.result button { font: 600 0.85rem/1 var(--f-head); padding: 9px 12px; border-radius: 8px; border: 1px solid var(--react); background: var(--react-bg); color: var(--react); cursor: pointer; }
+.result-hint { font-size: 0.88rem; color: var(--ink-3); }
 
 /* demo na żywo */
 .demo { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 16px 18px; display: grid; gap: 12px; }
@@ -116,6 +120,7 @@ td code { white-space: nowrap; }
 @media print {
   body { background: #fff; color: #000; font-size: 11pt; }
   .q button.opt { border-color: #999; }
+  .result button { display: none; }
   .demo, .quiz { break-inside: avoid; }
   a { color: #000; }
 }

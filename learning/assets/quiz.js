@@ -13,6 +13,8 @@
 //   <p class="score" aria-live="polite"></p>
 //   <script src="../assets/quiz.js"></script>
 // Kolejność odpowiedzi jest losowana, żeby pozycja nie zdradzała poprawnej.
+// Po ostatniej odpowiedzi pod wynikiem pojawia się linijka do wklejenia Claude'owi w czacie,
+// np. „Quiz 0001-model-mentalny-reacta 2026-10-19: 4/5 · 1+ 2+ 3+ 4- „6” 5+”.
 
 (function () {
   function shuffle(list) {
@@ -24,9 +26,42 @@
   }
 
   const questions = Array.from(document.querySelectorAll(".quiz .q"));
-  const scoreEl = document.querySelector(".score");
+  const scoreEl = document.querySelector(".quiz ~ .score");
+  const lesson = decodeURIComponent(location.pathname.split("/").pop() || "").replace(/\.html$/, "");
+  const results = new Array(questions.length);
   let answered = 0;
   let correct = 0;
+
+  function resultLine() {
+    const date = new Date().toLocaleDateString("sv-SE");
+    const marks = results.map((r, i) => (r.ok ? `${i + 1}+` : `${i + 1}- „${r.picked}”`)).join(" ");
+    return `Quiz ${lesson} ${date}: ${correct}/${questions.length} · ${marks}`;
+  }
+
+  function showResultLine() {
+    if (!scoreEl) return;
+    const box = document.createElement("div");
+    box.className = "result";
+    const line = document.createElement("p");
+    line.className = "result-line";
+    line.textContent = resultLine();
+    const copy = document.createElement("button");
+    copy.type = "button";
+    copy.textContent = "Kopiuj wynik";
+    copy.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(line.textContent);
+        copy.textContent = "Skopiowano";
+      } catch {
+        copy.textContent = "Zaznacz linijkę i skopiuj ręcznie";
+      }
+    });
+    const hint = document.createElement("p");
+    hint.className = "result-hint";
+    hint.textContent = "Wklej tę linijkę w czacie. Z błędnych odpowiedzi powstaną nowe fiszki.";
+    box.append(line, copy, hint);
+    scoreEl.after(box);
+  }
 
   function updateScore() {
     if (!scoreEl) return;
@@ -36,7 +71,7 @@
         : `Odpowiedziano: ${answered} / ${questions.length}`;
   }
 
-  questions.forEach((q) => {
+  questions.forEach((q, qi) => {
     const opts = q.querySelector(".opts");
     const buttons = shuffle(Array.from(opts.querySelectorAll("button.opt")));
     buttons.forEach((b) => opts.appendChild(b));
@@ -54,7 +89,9 @@
         if (explain) explain.hidden = false;
         answered += 1;
         if (isRight) correct += 1;
+        results[qi] = { ok: isRight, picked: btn.textContent.trim() };
         updateScore();
+        if (answered === questions.length) showResultLine();
       });
     });
   });

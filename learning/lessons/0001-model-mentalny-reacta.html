@@ -85,7 +85,7 @@ setCount(c =&gt; c + 1) // po kliknięciu: +3</code></pre>
 
   <div class="demo" id="demo" aria-live="polite">
     <span class="label react">Sprawdź na żywo (prawdziwy React 19)</span>
-    <div id="demo-root"><p class="score">Ładowanie Reacta…</p></div>
+    <div id="demo-root"><p class="demo-status">Ładowanie Reacta…</p></div>
   </div>
 </section>
 
@@ -191,7 +191,7 @@ setCount(c =&gt; c + 1) // po kliknięciu: +3</code></pre>
   try {
     createRoot(document.getElementById("demo-root")).render(h(SnapshotDemo));
   } catch (e) {
-    document.getElementById("demo-root").innerHTML = '<p class="score">Nie udało się załadować Reacta (brak internetu?). Kod demo znajdziesz na końcu pliku tej lekcji.</p>';
+    document.getElementById("demo-root").innerHTML = '<p class="demo-status">Nie udało się załadować Reacta (brak internetu?). Kod demo znajdziesz na końcu pliku tej lekcji.</p>';
   }
 </script>
 </body>
