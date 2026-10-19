@@ -16,13 +16,13 @@ Status: ⬜ nie zaczęty · 🟦 w trakcie · ✅ ukończony
 
 ---
 
-## ⬜ Moduł 0 · Warsztat
+## 🟦 Moduł 0 · Warsztat
 
 **Cel:** monorepo z aplikacją React + TypeScript, które sam postawiłeś i rozumiesz każdy plik.
 
-- [ ] Test wstępny: pomijamy to, co już umiesz
-- [ ] Lekcja 0001: model mentalny Reacta + quiz + odpowiedź na pytanie rekrutacyjne w czacie
-- [ ] Pierwszy commit (pliki warsztatu) i push na GitHuba
+- [x] Test wstępny: pomijamy to, co już umiesz (2026-10-19: nic nie pominięte, zob. learning record 0002)
+- [ ] Lekcja 0001: model mentalny Reacta + quiz + odpowiedź na pytanie rekrutacyjne w czacie (2026-10-19: quiz 4/5, odpowiedź 1,5 z 3; druga próba z pamięci na następnej sesji)
+- [x] Pierwszy commit (pliki warsztatu) i push na GitHuba
 - [ ] pnpm workspace (`pnpm-workspace.yaml`, główny `package.json`)
 - [ ] `apps/web` z szablonu Vite `react-ts`; uruchomione `pnpm dev`
 - [ ] TypeScript w trybie `strict` (+ `noUncheckedIndexedAccess`); rozumiesz, co dają te flagi
