@@ -11,6 +11,8 @@
   Klasyczne badanie efektu testowania: ponowne czytanie wygrywa po 5 minutach, testowanie wygrywa po tygodniu. Do czego: uzasadnienie quizów, fiszek i zasady „odpowiadaj z pamięci”.
 - [Nick Saraev: „How I Learn Complex Skills & Difficult Subjects So Fast with AI” (YouTube)](https://www.youtube.com/watch?v=FSXHk4hMrY8)
   Dziesięć ról AI w nauce (interviewer, mapmaker, explainer, socratic, examiner, checker, listener, diagnostician, sparring, clerk) i ryzyka „skrótu przez AI”. Praktyczny framework autora, nie badanie; na jego podstawie wprowadziliśmy pętlę „zrób od nowa”, zakaz przytakiwania, ćwiczenia z błędami, fiszki z harmonogramem oraz test wstępny i egzamin modułu.
+- [LearnHarness: teoria nauczania (docs/teaching-methodology.md)](https://github.com/amosblomqvist/learnharness/blob/main/docs/teaching-methodology.md) i [film „Agent Harness for Learning Things”](https://www.youtube.com/watch?v=nfTDljFG2g0)
+  Spójna teoria: bisekcja granicy wiedzy, minimalne drzewo zależności, nauka po jednym kroku rozumowania (przewidź → wyjaśnij → sprawdź) i osobna doktryna praktyki (wiedza ma przychodzić do głowy sama, przeplatanie, nieujawnianie tematu, powtórka błędów w nowej formie). Do czego: z tego pochodzą nasz test wstępny, pewność przy odpowiedziach, lekcje krokowe i sesje praktyki kodowej. Samej aplikacji nie używamy.
 
 ### React (moduły 1–2)
 - [react.dev/learn: oficjalny kurs Reacta](https://react.dev/learn)

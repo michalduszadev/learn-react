@@ -8,9 +8,15 @@
 - **Cel zawodowy:** oferty mid/senior React oraz fullstack „frontend-focused”. Pytania rekrutacyjne i `/grilling` na koniec modułów.
 - **Repo publiczne:** dbać o jakość commitów i README, bo to portfolio.
 - **Wnioski z filmu o nauce z AI (2026-10-15), wybrane przez Michała:**
-  - pętla „zrób od nowa bez pomocy” po podpowiedziach z 3. lub 4. szczebla;
+  - pętla „zrób od nowa bez pomocy” po podpowiedziach z 4. lub 5. szczebla (od 2026-10-24 drabinka ma szczeble 0–5);
   - zero przytakiwania (ocena z punktacją, wprost co jest źle);
   - ćwiczenia z podłożonymi błędami w obie strony;
   - fiszki z systemem pudełek Leitnera (`learning/cards/cards.js` + `learning/practice/`), każdy błąd staje się nową fiszką;
   - test wstępny i egzamin o rosnącej trudności w każdym module.
 - **Na razie odrzucone (można wrócić):** własne notatki zamiast ściąg pisanych przez Claude, dziennik błędów z diagnozą, symulacje rozmów z limitem czasu i „niechlujne” tickety.
+- **Wnioski z LearnHarness (2026-10-24), wszystkie cztery wybrane przez Michała:**
+  - test wstępny jako bisekcja wątków (start wysoko, podłoga, sufit, błędne przekonania);
+  - pewność + myślenie na głos przy każdej odpowiedzi, z klasyfikacją pomyłek;
+  - lekcje krokowe przewidź → wyjaśnienie → sprawdzenie (`assets/steps.js`);
+  - sesje praktyki kodowej według ich doktryny praktyki.
+- **Samej aplikacji LearnHarness nie używamy:** uczy pojęć w osobnym czacie i nie widzi projektu, jest na wczesnym etapie i ma osobne koszty API. Można ją kiedyś sprawdzić na czysto pojęciowym temacie (np. renderowanie, SQL, system design).

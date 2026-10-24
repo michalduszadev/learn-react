@@ -5,9 +5,11 @@
 Zasady:
 - **Bez terminów.** Moduły robisz po kolei, każdy kończy się działającą aplikacją.
 - **Kod piszesz Ty.** Claude jest mentorem (zasady w [`CLAUDE.md`](CLAUDE.md)).
-- **Każdy moduł zaczyna się testem wstępnym**: pytania od łatwych do trudnych w czacie. To, co już umiesz, oznaczamy jako „pominięte (test wstępny)” i nie przerabiamy.
+- **Każdy moduł zaczyna się testem wstępnym**, czyli bisekcją Twojej wiedzy w każdym wątku modułu: pytania startują wysoko, z pewnością i tokiem myślenia. To, co już umiesz, oznaczamy jako „pominięte (test wstępny)” i nie przerabiamy.
+- **Lekcje są krokowe:** przewidź → wyjaśnienie → sprawdzenie; kolejny krok dopiero po sprawdzeniu poprzedniego.
+- **Przed egzaminem jest sesja praktyki kodowej:** przeplatane krótkie zadania, które nie zdradzają tematu, a na koniec powtórka każdego błędu w nowej formie.
 - **Moduł jest ukończony**, gdy: wszystkie punkty są odhaczone lub pominięte, spełniasz „definicję ukończenia”, zdałeś egzamin końcowy (pytania o rosnącej trudności), zaliczyłeś sesję `/grilling` i potrafisz odpowiedzieć na pytania rekrutacyjne z danego modułu.
-- **Po podpowiedzi z 3. lub 4. szczebla** zadanie kończy się dopiero, gdy odtworzysz ten fragment od zera, bez pomocy.
+- **Po podpowiedzi z 4. lub 5. szczebla** (pseudokod albo kod) zadanie kończy się dopiero, gdy odtworzysz ten fragment od zera, bez pomocy.
 - **Powtórki:** fiszki w [`learning/cards/`](learning/cards/cards.js) (system pudełek Leitnera), ćwiczysz w czacie albo w [`learning/practice/`](learning/practice/index.html). Każdy błąd staje się nową fiszką.
 - Zadania z bieżącego modułu są w [GitHub Issues](../../issues). Moduły rozbijamy na issues dopiero, gdy do nich dochodzisz.
 - Uzasadnienie stacku: [raport z analizy rynku](https://claude.ai/artifact/STBJWjS3BjLfB2qhfL3NWq). Materiały: [`learning/`](learning/).
@@ -48,6 +50,7 @@ Status: ⬜ nie zaczęty · 🟦 w trakcie · ✅ ukończony
 - [ ] Własny hook `useOffers()` (odpowiednik composable)
 - [ ] Context dla motywu lub ustawień
 - [ ] React Router: lista ofert, szczegóły oferty, 404
+- [ ] Sesja praktyki kodowej (przeplatane zadania, powtórka błędów)
 - [ ] Egzamin końcowy (rosnąca trudność), potem `/grilling`
 
 **Definicja ukończenia:** da się dodać ofertę, zmienić jej status (np. „wysłane → rozmowa → oferta/odrzucone”) i filtrować; dane przetrwają odświeżenie strony; zero ostrzeżeń ESLint dotyczących hooków.
@@ -65,6 +68,7 @@ Status: ⬜ nie zaczęty · 🟦 w trakcie · ✅ ukończony
 - [ ] React Hook Form + Zod: walidacja formularza, komunikaty błędów
 - [ ] Suspense i Error Boundary dla widoku szczegółów
 - [ ] Profilowanie re-renderów (React DevTools); `useMemo` tylko tam, gdzie pomiar to uzasadnia
+- [ ] Sesja praktyki kodowej (przeplatane zadania, powtórka błędów)
 - [ ] Egzamin końcowy (rosnąca trudność), potem `/grilling`
 
 **Definicja ukończenia:** wyłączenie „sieci” w MSW daje sensowny komunikat błędu; po zmianie statusu lista aktualizuje się bez ręcznego odświeżania.
@@ -80,6 +84,7 @@ Status: ⬜ nie zaczęty · 🟦 w trakcie · ✅ ukończony
 - [ ] TDD (`/tdd`): jedna funkcja zbudowana od czerwonego testu
 - [ ] Playwright: e2e „dodaj ofertę → zmień status → filtruj”
 - [ ] Pokrycie kluczowych ścieżek, nie procentów
+- [ ] Sesja praktyki kodowej (przeplatane zadania, powtórka błędów)
 - [ ] Egzamin końcowy (rosnąca trudność), potem `/grilling`
 
 **Definicja ukończenia:** `pnpm test` i `pnpm test:e2e` przechodzą; zmiana nazwy wewnętrznej funkcji nie psuje żadnego testu.
@@ -100,6 +105,7 @@ Status: ⬜ nie zaczęty · 🟦 w trakcie · ✅ ukończony
 - [ ] Dokumentacja OpenAPI (Swagger)
 - [ ] Testy integracyjne API na testowej bazie
 - [ ] Frontend przełączony z MSW na API (MSW zostaje w testach)
+- [ ] Sesja praktyki kodowej (przeplatane zadania, powtórka błędów)
 - [ ] Egzamin końcowy (rosnąca trudność), potem `/grilling`
 
 **Definicja ukończenia:** `docker compose up` + `pnpm dev` uruchamia całość; dane żyją w Postgresie; testy API przechodzą.
@@ -116,6 +122,7 @@ Status: ⬜ nie zaczęty · 🟦 w trakcie · ✅ ukończony
 - [ ] Autoryzacja: guardy w NestJS, izolacja danych użytkowników
 - [ ] CORS, CSRF, nagłówki bezpieczeństwa, rate limiting
 - [ ] Przegląd pod kątem OWASP Top 10
+- [ ] Sesja praktyki kodowej (przeplatane zadania, powtórka błędów)
 - [ ] Egzamin końcowy (rosnąca trudność), potem `/grilling`
 
 **Definicja ukończenia:** użytkownik A nie może odczytać ani zmienić danych użytkownika B (jest na to test).
@@ -132,6 +139,7 @@ Status: ⬜ nie zaczęty · 🟦 w trakcie · ✅ ukończony
 - [ ] Sekrety i zmienne środowiskowe, osobne środowiska
 - [ ] Sentry (błędy frontu i API), strukturalne logi
 - [ ] Badge CI i link do demo w README
+- [ ] Sesja praktyki kodowej (przeplatane zadania, powtórka błędów)
 - [ ] Egzamin końcowy (rosnąca trudność), potem `/grilling`
 
 **Definicja ukończenia:** merge do `main` automatycznie wdraża nową wersję; błąd na produkcji widać w Sentry.
@@ -148,6 +156,7 @@ Status: ⬜ nie zaczęty · 🟦 w trakcie · ✅ ukończony
 - [ ] SSR / SSG / streaming: dobór strategii per widok
 - [ ] Web Vitals + Lighthouse: pomiar przed i po
 - [ ] Audyt dostępności (WCAG 2.2): klawiatura, czytniki, kontrast
+- [ ] Sesja praktyki kodowej (przeplatane zadania, powtórka błędów)
 - [ ] Egzamin końcowy (rosnąca trudność), potem `/grilling`
 
 **Definicja ukończenia:** Lighthouse ≥ 90 we wszystkich kategoriach na kluczowych widokach; zero krytycznych błędów dostępności.
@@ -165,6 +174,7 @@ Status: ⬜ nie zaczęty · 🟦 w trakcie · ✅ ukończony
 - [ ] Obsługa błędów, timeoutów, nietrafionych odpowiedzi; walidacja wyjścia
 - [ ] Mini-ewaluacja: zestaw kilkunastu prawdziwych ogłoszeń i oczekiwanych wyników, mierzenie trafności
 - [ ] (opcjonalnie) ta funkcja jako osobny serwis w Python + FastAPI
+- [ ] Sesja praktyki kodowej (przeplatane zadania, powtórka błędów)
 - [ ] Egzamin końcowy (rosnąca trudność), potem `/grilling`
 
 **Definicja ukończenia:** ekstrakcja przechodzi ewaluację na ustalonym progu trafności; błędy modelu nie psują UI.
