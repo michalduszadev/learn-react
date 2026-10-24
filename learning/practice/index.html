@@ -23,6 +23,10 @@
   button:disabled { opacity: 0.45; cursor: not-allowed; }
   .modes { display: flex; flex-wrap: wrap; gap: 8px; }
   .modes button[aria-pressed="true"] { border-color: var(--react); color: var(--react); background: var(--react-bg); }
+  .conf { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .conf-label { font: 500 0.82rem/1 var(--f-mono); color: var(--ink-3); margin-right: 4px; }
+  .conf button { font: 500 0.82rem/1 var(--f-mono); padding: 8px 10px; border-radius: 999px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink-2); cursor: pointer; }
+  .conf button[aria-pressed="true"] { border-color: var(--react); color: var(--react); background: var(--react-bg); }
   .progress { height: 6px; background: var(--rule); border-radius: 3px; overflow: hidden; }
   .progress span { display: block; height: 100%; background: var(--react); width: 0; }
   .result-line { font: 400 0.85rem/1.5 var(--f-mono); background: var(--code-bg); padding: 10px 12px; border-radius: 8px; word-break: break-all; user-select: all; }
@@ -108,25 +112,35 @@
     const c = deck[i];
     const progress = el("div", { class: "progress", "aria-hidden": "true" }, el("span"));
     progress.firstChild.style.width = `${Math.round((i / deck.length) * 100)}%`;
-    const answer = el("textarea", { id: "answer", placeholder: "Twoja odpowiedź z pamięci…", "aria-label": "Twoja odpowiedź" });
+    const answer = el("textarea", { id: "answer", placeholder: "Odpowiedź z pamięci + krótko, jak do niej doszedłeś…", "aria-label": "Twoja odpowiedź i tok myślenia" });
     const reveal = el("button", { type: "button", class: "primary", disabled: "" }, "Pokaż odpowiedź");
     const dunno = el("button", { type: "button" }, "Nie wiem");
-    answer.addEventListener("input", () => { reveal.disabled = answer.value.trim().length < 3; });
+    let conf = null;
+    const LEVELS = [[25, "strzelam"], [50, "pół na pół"], [75, "raczej tak"], [95, "pewny"]];
+    const confRow = el("div", { class: "conf", role: "group", "aria-label": "Pewność odpowiedzi" }, el("span", { class: "conf-label" }, "Pewność:"));
+    const sync = () => { reveal.disabled = answer.value.trim().length < 3 || conf === null; };
+    for (const [v, label] of LEVELS) {
+      const b = el("button", { type: "button", "aria-pressed": "false" }, `${v}% · ${label}`);
+      b.addEventListener("click", () => { conf = v; confRow.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b))); sync(); });
+      confRow.append(b);
+    }
+    answer.addEventListener("input", sync);
     answer.addEventListener("keydown", e => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && !reveal.disabled) reveal.click(); });
     const actions = el("div", { class: "actions" }, reveal, dunno);
     const card = el("div", { class: "card" },
       el("div", { class: "meta" }, el("span", {}, `${i + 1} / ${deck.length}`), el("span", {}, c.archived ? "archiwum" : `pudełko ${c.box}`), el("span", {}, c.src), el("span", {}, c.id)),
       progress,
       el("p", { class: "front" }, c.front),
-      answer, actions,
+      answer, confRow, actions,
     );
     root.append(card);
     answer.focus();
 
     function showBack(mine) {
-      answer.disabled = true; actions.remove();
+      answer.disabled = true; actions.remove(); confRow.remove();
+      if (!mine) conf = null;
       card.append(
-        mine ? el("p", { class: "mine" }, `Twoja odpowiedź: ${mine}`) : el("p", { class: "mine" }, "Twoja odpowiedź: nie wiem"),
+        mine ? el("p", { class: "mine" }, `Twoja odpowiedź (pewność ${conf}%): ${mine}`) : el("p", { class: "mine" }, "Twoja odpowiedź: nie wiem"),
         el("div", { class: "back" }, el("b", {}, "Odpowiedź"), el("span", {}, c.back)),
         el("div", { class: "actions" },
           el("button", { type: "button", class: "g-ok", onclick: () => grade("+") }, "Wiedziałem"),
@@ -140,7 +154,7 @@
     dunno.addEventListener("click", () => showBack(""));
 
     function grade(g) {
-      results.push({ id: c.id, g });
+      results.push({ id: c.id, g, conf });
       i += 1;
       store.set({ date: today, mode, ids: deck.map(x => x.id), i, results });
       render();
@@ -149,7 +163,8 @@
 
   function renderSummary() {
     const ok = results.filter(r => r.g === "+").length, mid = results.filter(r => r.g === "~").length, bad = results.filter(r => r.g === "-").length;
-    const line = `Powtórka ${today}: ` + results.map(r => r.id + r.g).join(" ");
+    // format: c0001+75 (wiedziałem, pewność 75%), c0002-95 (nie wiedziałem przy 95%), c0003-nw (nie wiem)
+    const line = `Powtórka ${today}: ` + results.map(r => r.id + r.g + (r.conf == null ? (r.g === "+" ? "" : "nw") : r.conf)).join(" ");
     const lineEl = el("p", { class: "result-line", id: "result-line" }, line);
     const copy = el("button", { type: "button", class: "copy" }, "Kopiuj wynik");
     copy.addEventListener("click", async () => {

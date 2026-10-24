@@ -107,6 +107,30 @@ td code { white-space: nowrap; }
 .result button { font: 600 0.85rem/1 var(--f-head); padding: 9px 12px; border-radius: 8px; border: 1px solid var(--react); background: var(--react-bg); color: var(--react); cursor: pointer; }
 .result-hint { font-size: 0.88rem; color: var(--ink-3); }
 
+/* pewność przed odpowiedzią (assets/quiz.js) */
+.conf { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.conf-label { font: 500 0.8rem/1 var(--f-mono); color: var(--ink-3); margin-right: 2px; }
+.conf button { font: 500 0.8rem/1 var(--f-mono); padding: 7px 10px; border-radius: 999px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink-2); cursor: pointer; }
+.conf button[aria-pressed="true"] { border-color: var(--react); color: var(--react); background: var(--react-bg); }
+.conf button.dunno { margin-left: auto; }
+.conf button:disabled { cursor: default; opacity: 0.6; }
+.q button.opt:disabled:not(.right):not(.wrong) { opacity: 0.55; }
+
+/* lekcje krokowe: przewidź → wyjaśnienie → sprawdzenie (assets/steps.js) */
+.step { display: grid; gap: 16px; border-top: 1px solid var(--rule); padding-top: 24px; }
+.step-head { display: flex; gap: 10px; align-items: baseline; }
+.step-head .label { color: var(--ink-3); }
+.predict { background: var(--surface); border: 1px dashed var(--react); border-radius: 10px; padding: 16px 18px; display: grid; gap: 10px; }
+.predict .prompt { font-weight: 600; }
+.predict textarea { width: 100%; min-height: 84px; font: 400 0.95rem/1.5 var(--f-read); color: var(--ink); background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; padding: 10px 12px; resize: vertical; }
+.predict textarea:focus-visible { outline: 2px solid var(--react); outline-offset: 1px; }
+.predict .row { display: flex; flex-wrap: wrap; gap: 8px; }
+.predict button { font: 600 0.88rem/1 var(--f-head); padding: 9px 12px; border-radius: 8px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); cursor: pointer; }
+.predict button.commit { border-color: var(--react); background: var(--react-bg); color: var(--react); }
+.predict button:disabled { opacity: 0.45; cursor: not-allowed; }
+.your-prediction { font-size: 0.92rem; color: var(--ink-2); border-left: 3px solid var(--react); padding-left: 12px; white-space: pre-wrap; }
+.step-locked { color: var(--ink-3); font: 500 0.85rem/1.4 var(--f-mono); }
+
 /* demo na żywo */
 .demo { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 16px 18px; display: grid; gap: 12px; }
 .demo button { font: 600 0.9rem/1 var(--f-head); padding: 10px 14px; border-radius: 8px; border: 1px solid var(--react); background: var(--react-bg); color: var(--react); cursor: pointer; }
