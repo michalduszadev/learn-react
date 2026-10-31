@@ -208,6 +208,20 @@ learning/
 
 Najważniejsze źródła: react.dev/learn (zwłaszcza „Render and Commit”, „State as a Snapshot”, „You Might Not Need an Effect”, „Thinking in React”, „Custom Hooks”), Vite guide, pnpm workspaces, TanStack Query + blog TkDodo, Zustand, React Hook Form, Zod, MSW, Vitest, RTL, Playwright, NestJS, PostgreSQL tutorial, OWASP, Next.js, web.dev Web Vitals, WCAG 2.2, Claude API structured outputs, a do porównań Vue „Reactivity in Depth”.
 
+### Skille Claude Code używane w planie nauki
+
+Repo odwołuje się do pięciu skilli (slash commands). **Ich definicji (plików `SKILL.md`) nie ma w repo**, są zainstalowane lokalnie w Claude Code na moim komputerze. Poniżej opisuję, do czego służą w planie. Jeśli nowy czat ich nie ma, trzeba mu odtworzyć zachowanie z tych opisów.
+
+| Skill | Gdzie w planie | Do czego |
+|---|---|---|
+| `/teach` | cały czas | prowadzi naukę; jego warsztat (misja, źródła, notatki, lekcje, ściągi, learning records) leży w `learning/`, nie w katalogu głównym |
+| `/grilling` | koniec każdego modułu (0–9), po egzaminie | sesja maglowania jak na rozmowie technicznej; w module 9 z całego projektu + system design „jak to skalować ×100” |
+| `/tdd` | moduł 3 | jedna funkcja zbudowana od czerwonego testu |
+| `/domain-modeling` | moduł 4 | `GLOSSARY.md` (Oferta, Aplikacja, Etap, Umiejętność…) + model danych |
+| `/codebase-design` | moduł 9 | przegląd architektury i refaktor najsłabszego modułu |
+
+Inne ustawienie z repo: `.claude/settings.json` każe Claude **pytać o zgodę przed każdą edycją w `apps/**`**. To techniczne zabezpieczenie zasady „AI nie pisze kodu aplikacji”.
+
 ---
 
 ## 8. Stan nauki (2026-10-31)
