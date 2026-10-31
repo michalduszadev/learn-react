@@ -254,6 +254,16 @@ Inne ustawienie z repo: `.claude/settings.json` każe Claude **pytać o zgodę p
 
 ---
 
+### GitHub Issues modułu 0
+
+- **#1 Lekcja 0001: model mentalny Reacta** (otwarte). Kryteria: quiz z pamięci, przeczytane „Render and Commit” i „State as a Snapshot”, a w czacie własna odpowiedź w 3–4 zdaniach na pytanie „Czym różni się model aktualizacji UI w React i w Vue?” z review jak na rozmowie rekrutacyjnej.
+- **#2 Pierwszy commit i push warsztatu** (zamknięte).
+- **#3 Monorepo pnpm + `apps/web`** (otwarte). Kryteria: `pnpm-workspace.yaml` obejmuje `apps/*` (w przyszłości `packages/*`); prywatny główny `package.json` ze skryptem `dev`, który uruchamia web z katalogu głównego; `apps/web` z oficjalnego szablonu Vite `react-ts`; `pnpm dev` z katalogu głównego pokazuje działającą stronę; umiem powiedzieć, do czego służy `index.html`, `src/main.tsx`, `src/App.tsx`, `vite.config.ts` i oba `tsconfig*.json`. Pytanie kontrolne: dlaczego `index.html` leży w katalogu głównym aplikacji, a nie w `public/`?
+- **#4 TypeScript strict + skrypt `typecheck`** (otwarte). Kryteria: `strict: true` i `noUncheckedIndexedAccess: true`; `typecheck` z katalogu głównego przechodzi; umiem wyjaśnić, co włącza `strict` i jaki błąd łapie `noUncheckedIndexedAccess` (przykład z tablicą ofert).
+- **#5 ESLint (reguły hooków) + Prettier** (otwarte). Kryteria: ESLint flat config z `react-hooks`; Prettier bez konfliktów z ESLintem; skrypty `lint` i `format` z katalogu głównego; celowo łamię regułę hooków (np. hook w `if`), czytam komunikat, naprawiam i umiem wyjaśnić, dlaczego ta reguła istnieje. Po ukończeniu modułu: `/grilling` i odhaczenie w `ROADMAP.md`.
+
+---
+
 ## 9. Następne kroki
 
 1. **Rozgrzewka:** 5 fiszek (najpierw c0015, c0014, c0011, c0012, c0013, czyli karty z błędów), po jednej, z pewnością i tokiem myślenia.
@@ -263,6 +273,16 @@ Inne ustawienie z repo: `.claude/settings.json` każe Claude **pytać o zgodę p
 
 ---
 
-## 10. Instrukcja dla AI w nowym czacie
+## 10. Czego to podsumowanie nie zawiera
+
+- **Pełnej treści plików z repo:** lekcji 0001 (HTML z quizem i demem), ściągi Vue → React (~30 odpowiedników), aplikacji do fiszek i komponentów `quiz.js`/`steps.js`. Są tu opisane, ale ich treść jest tylko w repo. Jeśli nowy czat ma do niego dostęp, niech je przeczyta.
+- **Pełnych tabel z raportu rynkowego** (rozbicie na portale i poziomy): są pod linkiem w sekcji 2.
+- **Definicji skilli** (`SKILL.md`): są lokalnie w `~/.claude/skills/` (zob. sekcja 7).
+- **Surowych materiałów z analiz filmów** (transkryptów i klatek): były w kontenerze poprzednich sesji i nie przetrwały. Zostały z nich tylko wnioski, opisane w sekcji 6.
+- **Dosłownego przebiegu wcześniejszych rozmów:** np. moich odpowiedzi w quizie i na pytanie rekrutacyjne. Zostały wyniki (quiz 4/5, odpowiedź 1,5 z 3), a błędy zamieniono w fiszki c0011–c0016.
+
+---
+
+## 11. Instrukcja dla AI w nowym czacie
 
 Jesteś moim mentorem według zasad z sekcji 5. Nie pisz za mnie kodu aplikacji, podpowiadaj po jednym szczeblu drabinki, przy każdym pytaniu proś o pewność i tok myślenia, oceniaj wprost i z punktacją, tłumacz przez analogię do Vue i podawaj linki do oficjalnej dokumentacji. Zacznij od rozgrzewki z sekcji 9.
